@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>IPL Future Match Predictor</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+    <!-- Background -->
+    <div class="background-glow glow-one"></div>
+    <div class="background-glow glow-two"></div>
+
+
+    <!-- ================= HEADER ================= -->
+
+    <header class="navbar">
+
+        <div class="brand">
+
+            <div class="brand-icon">🏏</div>
+
+            <div>
+                <h1>IPL Future Match Predictor</h1>
+
+                <span>
+                    AI Powered Future Match Prediction & Analysis
+                </span>
+            </div>
+
+        </div>
+
+        <div class="status">
+            <span class="status-dot"></span>
+            AI Engine Online
+        </div>
+
+    </header>
+
+
+    <!-- ================= MAIN ================= -->
+
+    <main class="container">
+
+
+        <!-- ================= HERO ================= -->
+
+        <section class="hero">
+
+            <span class="hero-badge">
+                AI-POWERED FUTURE IPL PREDICTION
+            </span>
+
+            <h2>
+                Analyze. Predict. <span>Understand.</span>
+            </h2>
+
+            <p>
+                Analyze historical IPL performance and generate
+                machine-learning predictions for future matches.
+            </p>
+
+            <div class="hero-highlights">
+
+                <div class="hero-highlight">
+                    <strong>18+</strong>
+                    <span>IPL Seasons</span>
+                </div>
+
+                <div class="hero-highlight">
+                    <strong>1,200+</strong>
+                    <span>Matches Analyzed</span>
+                </div>
+
+                <div class="hero-highlight">
+                    <strong>ML</strong>
+                    <span>Prediction Engine</span>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= INPUT CARD ================= -->
+
+        <section class="prediction-card">
+
+            <div class="section-title">
+
+                <div>
+                    <span class="small-label">
+                        FUTURE MATCH PREDICTION
+                    </span>
+
+                    <h3>
+                        Set Match Conditions
+                    </h3>
+                </div>
+
+                <div class="step-number">
+                    STEP 01
+                </div>
+
+            </div>
+
+
+            <!-- Teams -->
+
+            <div class="teams-container">
+
+                <div class="team-box">
+
+                    <label for="team1">
+                        Team 1
+                    </label>
+
+                    <select id="team1">
+                        <option value="">
+                            Select Team 1
+                        </option>
+                    </select>
+
+                </div>
+
+
+                <div class="vs">
+                    <span>VS</span>
+                </div>
+
+
+                <div class="team-box">
+
+                    <label for="team2">
+                        Team 2
+                    </label>
+
+                    <select id="team2">
+                        <option value="">
+                            Select Team 2
+                        </option>
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <!-- Match Details -->
+
+            <div class="form-grid">
+
+                <div class="input-group">
+
+                    <label for="venue">
+                        Venue
+                    </label>
+
+                    <select id="venue">
+                        <option value="">
+                            Select Venue
+                        </option>
+                    </select>
+
+                </div>
+
+
+                <div class="input-group">
+
+                    <label for="match-date">
+                        Match Date
+                    </label>
+
+                    <input
+                        type="date"
+                        id="match-date"
+                        min="2027-01-01"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="input-group">
+
+                    <label for="toss-winner">
+                        Toss Winner
+                    </label>
+
+                    <select id="toss-winner">
+
+                        <option value="">
+                            Select Toss Winner
+                        </option>
+
+                        <option value="team1">
+                            Team 1
+                        </option>
+
+                        <option value="team2">
+                            Team 2
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="input-group">
+
+                    <label for="toss-decision">
+                        Toss Decision
+                    </label>
+
+                    <select id="toss-decision">
+
+                        <option value="">
+                            Select Decision
+                        </option>
+
+                        <option value="bat">
+                            Bat
+                        </option>
+
+                        <option value="field">
+                            Field
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <!-- Future Information -->
+
+            <div class="future-info">
+
+                <span class="future-info-icon">
+                    🤖
+                </span>
+
+                <span>
+                    The AI model uses historical IPL data available
+                    before the selected match date to estimate the
+                    future match outcome.
+                </span>
+
+            </div>
+
+
+            <!-- Predict Button -->
+
+            <button
+                id="predict-btn"
+                class="predict-btn"
+                type="button"
+            >
+
+                <span class="button-icon">
+                    ⚡
+                </span>
+
+                <span class="button-text">
+                    Predict Future Match
+                </span>
+
+                <span class="button-arrow">
+                    →
+                </span>
+
+            </button>
+
+
+            <!-- Loading -->
+
+            <div
+                id="loading"
+                class="loading hidden"
+            >
+
+                <div class="loader"></div>
+
+                <span>
+                    AI engine is analyzing the future match...
+                </span>
+
+            </div>
+
+
+            <!-- Error -->
+
+            <div
+                id="error-message"
+                class="error-message hidden"
+            ></div>
+
+        </section>
+
+
+        <!-- =====================================================
+             PREDICTION RESULTS
+             ===================================================== -->
+
+        <section
+            id="prediction-result"
+            class="results-section hidden"
+        >
+
+
+            <!-- Result Header -->
+
+            <div class="section-title">
+
+                <div>
+
+                    <span class="small-label">
+                        AI PREDICTION
+                    </span>
+
+                    <h3>
+                        Future Match Prediction
+                    </h3>
+
+                </div>
+
+                <div class="step-number">
+                    STEP 02
+                </div>
+
+            </div>
+
+
+            <!-- ================= PREDICTION OVERVIEW ================= -->
+
+            <div class="prediction-overview">
+
+                <!-- Winner -->
+
+                <div class="winner-card">
+
+                    <div class="winner-label">
+                        PREDICTED WINNER
+                    </div>
+
+                    <h2 id="predicted-winner">
+                        —
+                    </h2>
+
+                    <p>
+                        Estimated from historical performance,
+                        match conditions and machine learning.
+                    </p>
+
+                </div>
+
+
+                <!-- Confidence -->
+
+                <div class="confidence-card">
+
+                    <div>
+
+                        <span class="small-label">
+                            MODEL CONFIDENCE
+                        </span>
+
+                        <h3 id="model-confidence">
+                            0%
+                        </h3>
+
+                    </div>
+
+                    <div class="confidence-description">
+                        Confidence is derived from the model's
+                        predicted probability distribution.
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ================= PROBABILITY ================= -->
+
+            <div class="dashboard-section">
+
+                <div class="section-heading">
+
+                    <div>
+                        <span class="small-label">
+                            WIN PROBABILITY
+                        </span>
+
+                        <h3>
+                            Predicted Match Chances
+                        </h3>
+                    </div>
+
+                </div>
+
+
+                <div class="probability-grid">
+
+                    <!-- Team 1 -->
+
+                    <div class="probability-card">
+
+                        <div class="probability-header">
+
+                            <span id="team1-name">
+                                Team 1
+                            </span>
+
+                            <strong id="team1-probability">
+                                0%
+                            </strong>
+
+                        </div>
+
+                        <div class="progress-bar">
+
+                            <div
+                                id="team1-progress"
+                                class="progress-fill"
+                            ></div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Team 2 -->
+
+                    <div class="probability-card">
+
+                        <div class="probability-header">
+
+                            <span id="team2-name">
+                                Team 2
+                            </span>
+
+                            <strong id="team2-probability">
+                                0%
+                            </strong>
+
+                        </div>
+
+                        <div class="progress-bar">
+
+                            <div
+                                id="team2-progress"
+                                class="progress-fill"
+                            ></div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ================= SCORE PREDICTION ================= -->
+
+            <div class="dashboard-section">
+
+                <div class="section-heading">
+
+                    <div>
+                        <span class="small-label">
+                            SCORE PREDICTION
+                        </span>
+
+                        <h3>
+                            Expected First Innings Score
+                        </h3>
+                    </div>
+
+                    <div class="score-icon">
+                        🏏
+                    </div>
+
+                </div>
+
+
+                <div class="score-prediction-grid">
+
+                    <div class="score-stat">
+
+                        <span>
+                            EXPECTED SCORE
+                        </span>
+
+                        <strong id="expected-score">
+                            —
+                        </strong>
+
+                        <small>
+                            runs
+                        </small>
+
+                    </div>
+
+
+                    <div class="score-stat">
+
+                        <span>
+                            ESTIMATED RANGE
+                        </span>
+
+                        <strong id="score-range">
+                            —
+                        </strong>
+
+                        <small>
+                            runs
+                        </small>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ================= TEAM ANALYSIS ================= -->
+
+            <div class="analysis-section">
+
+                <div class="section-title">
+
+                    <div>
+
+                        <span class="small-label">
+                            MATCH INTELLIGENCE
+                        </span>
+
+                        <h3>
+                            Team Performance Dashboard
+                        </h3>
+
+                    </div>
+
+                </div>
+
+
+                <div class="analysis-grid">
+
+
+                    <!-- Team 1 -->
+
+                    <div class="analysis-card">
+
+                        <div class="analysis-card-header">
+
+                            <div>
+                                <span class="team-analysis-label">
+                                    TEAM 1
+                                </span>
+
+                                <h4 id="analysis-team1">
+                                    Team 1
+                                </h4>
+                            </div>
+
+                            <span class="analysis-icon">
+                                📊
+                            </span>
+
+                        </div>
+
+
+                        <div class="stat-row">
+                            <span>Elo Rating</span>
+                            <strong id="team1-elo">—</strong>
+                        </div>
+
+                        <div class="stat-row">
+                            <span>Win Rate</span>
+                            <strong id="team1-win-rate">—</strong>
+                        </div>
+
+                        <div class="stat-row">
+                            <span>Recent Form</span>
+                            <strong id="team1-form">—</strong>
+                        </div>
+
+                        <div class="stat-row">
+                            <span>Venue Win Rate</span>
+                            <strong id="team1-venue">—</strong>
+                        </div>
+
+                        <div class="stat-row">
+                            <span>Recent Runs</span>
+                            <strong id="team1-runs">—</strong>
+                        </div>
+
+                        <div class="stat-row">
+                            <span>Recent Wickets</span>
+                            <strong id="team1-wickets">—</strong>
+                        </div>
+
+                    </div>
+
+
+                    <!-- Team 2 -->
+
+                    <div class="analysis-card">
+
+                        <div class="analysis-card-header">
+
+                            <div>
+                                <span class="team-analysis-label">
+                                    TEAM 2
+                                </span>
+
+                                <h4 id="analysis-team2">
+                                    Team 2
+                                </h4>
+                            </div>
+
+                            <span class="analysis-icon">
+                                📊
+                            </span>
+
+                        </div>
+
+
+                        <div class="stat-row">
+                            <span>Elo Rating</span>
+                            <strong id="team2-elo">—</strong>
+                        </div>
+
+                        <div class="stat-row">
+                            <span>Win Rate</span>
+                            <strong id="team2-win-rate">—</strong>
+                        </div>
+
+                        <div class="stat-row">
+                            <span>Recent Form</span>
+                            <strong id="team2-form">—</strong>
+                        </div>
+
+                        <div class="stat-row">
+                            <span>Venue Win Rate</span>
+                            <strong id="team2-venue">—</strong>
+                        </div>
+
+                        <div class="stat-row">
+                            <span>Recent Runs</span>
+                            <strong id="team2-runs">—</strong>
+                        </div>
+
+                        <div class="stat-row">
+                            <span>Recent Wickets</span>
+                            <strong id="team2-wickets">—</strong>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ================= VENUE ANALYSIS ================= -->
+
+            <div class="dashboard-section">
+
+                <div class="section-heading">
+
+                    <div>
+
+                        <span class="small-label">
+                            VENUE INTELLIGENCE
+                        </span>
+
+                        <h3>
+                            Ground Analysis
+                        </h3>
+
+                    </div>
+
+                    <span class="dashboard-icon">
+                        🏟️
+                    </span>
+
+                </div>
+
+
+                <div class="venue-dashboard">
+
+                    <div class="venue-stat">
+                        <span>SELECTED VENUE</span>
+                        <strong id="report-venue">—</strong>
+                    </div>
+
+                    <div class="venue-stat">
+                        <span>AVERAGE SCORE</span>
+                        <strong id="venue-average-score">—</strong>
+                    </div>
+
+                    <div class="venue-stat">
+                        <span>MATCHES ANALYZED</span>
+                        <strong id="venue-matches">—</strong>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ================= HEAD TO HEAD ================= -->
+
+            <div class="h2h-card">
+
+                <div class="h2h-title">
+
+                    <span class="small-label">
+                        HEAD TO HEAD
+                    </span>
+
+                    <h3>
+                        Historical Rivalry
+                    </h3>
+
+                </div>
+
+
+                <div class="h2h-stats">
+
+                    <div>
+
+                        <strong id="h2h-team1">
+                            0
+                        </strong>
+
+                        <span id="h2h-team1-name">
+                            Team 1 Wins
+                        </span>
+
+                    </div>
+
+
+                    <div class="h2h-total">
+
+                        <span>
+                            Total Matches
+                        </span>
+
+                        <strong id="h2h-total">
+                            0
+                        </strong>
+
+                    </div>
+
+
+                    <div>
+
+                        <strong id="h2h-team2">
+                            0
+                        </strong>
+
+                        <span id="h2h-team2-name">
+                            Team 2 Wins
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ================= MATCH REPORT ================= -->
+
+            <div class="report-card match-report-card">
+
+                <div class="report-header">
+
+                    <div>
+
+                        <span class="small-label">
+                            MATCH REPORT
+                        </span>
+
+                        <h3>
+                            AI Match Analysis
+                        </h3>
+
+                    </div>
+
+                    <span class="report-icon">
+                        📝
+                    </span>
+
+                </div>
+
+
+                <p id="match-summary">
+                    Select future match conditions and run the
+                    prediction to generate the analysis.
+                </p>
+
+            </div>
+
+
+            <!-- ================= FINAL NOTE ================= -->
+
+            <div class="future-info report-note">
+
+                <span class="future-info-icon">
+                    ℹ️
+                </span>
+
+                <span>
+                    Predictions are estimates generated from historical
+                    IPL data and machine-learning models. Actual match
+                    results may differ.
+                </span>
+
+            </div>
+
+
+        </section>
+
+    </main>
+
+
+    <!-- ================= FOOTER ================= -->
+
+    <footer>
+
+        <p>
+            IPL Future Match Predictor
+            <span>•</span>
+            AI / ML Powered Analytics
+        </p>
+
+    </footer>
+
+
+    <!-- JavaScript -->
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+</body>
+
+</html>
