@@ -541,7 +541,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const response =
                 await fetch(
-                    "/api/predict",
+                    "https://ipl-match-analyzer.onrender.com/api/predict",
                     {
                         method: "POST",
 
