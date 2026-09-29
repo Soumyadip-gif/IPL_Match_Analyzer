@@ -116,7 +116,7 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
 
             const response =
-                await fetch("https://ipl-match-analyzer.onrender.com/api/options");
+                await fetch("/api/options");
 
             const data =
                 await response.json();
@@ -541,7 +541,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const response =
                 await fetch(
-                    "https://ipl-match-analyzer.onrender.com/api/predict",
+                    "/api/predict",
                     {
                         method: "POST",
 
