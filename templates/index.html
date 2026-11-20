@@ -48,6 +48,15 @@
 
     <main class="container">
 
+        <nav class="analytics-nav" aria-label="Main navigation">
+            <a href="#analytics-dashboard">Dashboard</a>
+            <a href="#team-statistics">Team Statistics</a>
+            <a href="#head-to-head">Head to Head</a>
+            <a href="#season-centre">Season Centre</a>
+            <a href="#predictor">Match Predictor</a>
+        </nav>
+
+
 
         <!-- ================= HERO ================= -->
 
@@ -88,9 +97,88 @@
         </section>
 
 
+        <!-- ================= IPL ANALYTICS ================= -->
+
+        <section class="analytics-panel" id="analytics-dashboard">
+            <div class="section-title">
+                <div>
+                    <span class="small-label">IPL HISTORICAL DATA</span>
+                    <h3>League Overview</h3>
+                </div>
+                <span class="analytics-live">DATA CONNECTED</span>
+            </div>
+
+            <div class="overview-grid" id="overview-grid">
+                <div class="overview-card"><span>Total Matches</span><strong id="stat-matches">?</strong></div>
+                <div class="overview-card"><span>Decided Matches</span><strong id="stat-decided">?</strong></div>
+                <div class="overview-card"><span>IPL Teams</span><strong id="stat-teams">?</strong></div>
+                <div class="overview-card"><span>Seasons</span><strong id="stat-seasons">?</strong></div>
+            </div>
+        </section>
+
+        <section class="analytics-panel" id="team-statistics">
+            <div class="section-title">
+                <div>
+                    <span class="small-label">HISTORICAL PERFORMANCE</span>
+                    <h3>Team Statistics</h3>
+                </div>
+            </div>
+            <div class="analytics-table-wrap">
+                <table class="analytics-table">
+                    <thead>
+                        <tr><th>Rank</th><th>Team</th><th>Matches</th><th>Wins</th><th>Losses</th><th>Win %</th></tr>
+                    </thead>
+                    <tbody id="team-stats-body">
+                        <tr><td colspan="6">Loading team statistics...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="analytics-panel" id="head-to-head">
+            <div class="section-title">
+                <div>
+                    <span class="small-label">TEAM COMPARISON</span>
+                    <h3>Head-to-Head Analysis</h3>
+                </div>
+            </div>
+            <div class="analytics-controls">
+                <select id="analytics-team1" aria-label="First team"></select>
+                <span class="analytics-versus">VS</span>
+                <select id="analytics-team2" aria-label="Second team"></select>
+                <button type="button" id="h2h-compare-btn" class="analytics-button">Compare Teams</button>
+                <button type="button" id="h2h-reset-btn" class="reset-button">Reset</button>
+            </div>
+            <div id="h2h-result" class="analytics-result">
+                Select two teams to compare their historical results.
+            </div>
+        </section>
+
+        <section class="analytics-panel" id="season-centre">
+            <div class="section-title">
+                <div>
+                    <span class="small-label">SEASON-BY-SEASON RECORDS</span>
+                    <h3>IPL Season Centre</h3>
+                </div>
+                <select id="season-selector" aria-label="Select IPL season"></select>
+            </div>
+            <div id="season-summary" class="season-summary">Select a season to view its statistics.</div>
+            <div class="analytics-table-wrap">
+                <table class="analytics-table">
+                    <thead>
+                        <tr><th>Pos</th><th>Team</th><th>Played</th><th>Won</th><th>Lost</th><th>Tied</th><th>NR</th><th>Points</th></tr>
+                    </thead>
+                    <tbody id="season-stats-body">
+                        <tr><td colspan="8">Select a season.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="analytics-footnote">Points shown are calculated as 2 per win, 1 per tie and 1 per no-result match. Net run rate is not included.</p>
+        </section>
+
         <!-- ================= INPUT CARD ================= -->
 
-        <section class="prediction-card">
+        <section class="prediction-card" id="predictor">
 
             <div class="section-title">
 
@@ -100,7 +188,7 @@
                     </span>
 
                     <h3>
-                        Set Match Conditions
+                        Choose Your Teams
                     </h3>
                 </div>
 
@@ -118,12 +206,12 @@
                 <div class="team-box">
 
                     <label for="team1">
-                        Team 1
+                        Home Team
                     </label>
 
                     <select id="team1">
                         <option value="">
-                            Select Team 1
+                            Select Home Team
                         </option>
                     </select>
 
@@ -138,12 +226,12 @@
                 <div class="team-box">
 
                     <label for="team2">
-                        Team 2
+                        Away Team
                     </label>
 
                     <select id="team2">
                         <option value="">
-                            Select Team 2
+                            Select Away Team
                         </option>
                     </select>
 
@@ -248,9 +336,8 @@
                 </span>
 
                 <span>
-                    The AI model uses historical IPL data available
-                    before the selected match date to estimate the
-                    future match outcome.
+                    The AI model analyses historical IPL performance, team form
+                    and head-to-head records to estimate the match outcome.
                 </span>
 
             </div>
@@ -278,6 +365,8 @@
 
             </button>
 
+
+            <button type="button" id="reset-prediction-btn" class="reset-button prediction-reset-button">Reset Prediction</button>
 
             <!-- Loading -->
 

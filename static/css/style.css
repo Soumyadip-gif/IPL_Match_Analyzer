@@ -2491,3 +2491,356 @@ footer span {
         align-items: center;
     }
 }
+
+/* ============================================================
+   IPL ANALYTICS NAVIGATION AND DASHBOARD
+   ============================================================ */
+
+.analytics-nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin: 0 auto 30px;
+    padding: 14px;
+    position: sticky;
+    top: 8px;
+    z-index: 20;
+    border: 1px solid rgba(255,255,255,.09);
+    border-radius: 16px;
+    background: rgba(15,20,27,.92);
+    backdrop-filter: blur(16px);
+}
+
+.analytics-nav a {
+    color: #c7d0d9;
+    text-decoration: none;
+    font-size: .86rem;
+    font-weight: 600;
+    padding: 10px 14px;
+    border-radius: 9px;
+    transition: .2s ease;
+}
+
+.analytics-nav a:hover {
+    color: #b9f36b;
+    background: rgba(185,243,107,.09);
+}
+
+.analytics-panel {
+    margin: 28px 0;
+    padding: 26px;
+    border: 1px solid rgba(255,255,255,.09);
+    border-radius: 20px;
+    background: rgba(18,24,32,.88);
+    scroll-margin-top: 100px;
+}
+
+.analytics-live {
+    color: #b9f36b;
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .08em;
+}
+
+.overview-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+    margin-top: 22px;
+}
+
+.overview-card {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 20px;
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 14px;
+    background: rgba(255,255,255,.025);
+}
+
+.overview-card span {
+    color: #9ba8b6;
+    font-size: .85rem;
+}
+
+.overview-card strong {
+    color: #b9f36b;
+    font-size: 1.9rem;
+    font-weight: 750;
+}
+
+.analytics-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+    margin-top: 20px;
+}
+
+.analytics-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 620px;
+    text-align: left;
+}
+
+.analytics-table th,
+.analytics-table td {
+    padding: 14px 13px;
+    border-bottom: 1px solid rgba(255,255,255,.07);
+    white-space: nowrap;
+    font-size: .88rem;
+}
+
+.analytics-table th {
+    color: #aab6c3;
+    font-size: .76rem;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+}
+
+.analytics-table td {
+    color: #e0e6ed;
+}
+
+.analytics-table tbody tr:hover {
+    background: rgba(185,243,107,.045);
+}
+
+.analytics-team-name {
+    font-weight: 650;
+}
+
+.analytics-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin: 22px 0;
+}
+
+.analytics-controls select,
+#season-selector {
+    min-width: 190px;
+    padding: 12px 14px;
+    color: #e9eef4;
+    background: #202a35;
+    border: 1px solid rgba(255,255,255,.13);
+    border-radius: 9px;
+}
+
+.analytics-controls select option,
+#season-selector option {
+    background: #202a35;
+    color: #fff;
+}
+
+.analytics-versus {
+    color: #b9f36b;
+    font-weight: 800;
+}
+
+.analytics-button {
+    padding: 12px 18px;
+    border: 0;
+    border-radius: 9px;
+    color: #15200d;
+    background: #b9f36b;
+    font-weight: 750;
+    cursor: pointer;
+    transition: transform .2s ease, filter .2s ease;
+}
+
+.analytics-button:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.06);
+}
+
+.analytics-result {
+    padding: 20px;
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 14px;
+    background: rgba(255,255,255,.025);
+    color: #bdc8d3;
+}
+
+.h2h-score-grid {
+    display: grid;
+    grid-template-columns: 1fr 150px 1fr;
+    align-items: center;
+    gap: 14px;
+    text-align: center;
+}
+
+.h2h-team-score {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.h2h-team-score span {
+    color: #dce5ed;
+    font-weight: 650;
+}
+
+.h2h-team-score strong {
+    color: #b9f36b;
+    font-size: 2.6rem;
+}
+
+.h2h-team-score small,
+.h2h-middle span {
+    color: #94a2b0;
+}
+
+.h2h-middle {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 15px 5px;
+    border-left: 1px solid rgba(255,255,255,.1);
+    border-right: 1px solid rgba(255,255,255,.1);
+}
+
+.h2h-middle strong {
+    color: #fff;
+    font-size: 1.6rem;
+}
+
+.recent-heading {
+    margin: 22px 0 10px;
+    color: #e9eef4;
+}
+
+.recent-match {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255,255,255,.07);
+}
+
+.recent-match span {
+    color: #94a2b0;
+    font-size: .83rem;
+}
+
+.recent-match strong {
+    color: #dce5ed;
+    font-size: .86rem;
+    text-align: right;
+}
+
+.season-summary {
+    margin-top: 18px;
+    color: #b9f36b;
+    font-weight: 650;
+}
+
+.analytics-footnote {
+    color: #8997a5;
+    font-size: .8rem;
+    line-height: 1.6;
+    margin-top: 15px;
+}
+
+@media (max-width: 800px) {
+    .overview-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .analytics-panel {
+        padding: 19px;
+    }
+
+    .analytics-nav {
+        position: static;
+    }
+}
+
+@media (max-width: 520px) {
+    .overview-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 9px;
+    }
+
+    .overview-card {
+        padding: 14px;
+    }
+
+    .overview-card strong {
+        font-size: 1.5rem;
+    }
+
+    .analytics-nav {
+        gap: 4px;
+        padding: 9px;
+    }
+
+    .analytics-nav a {
+        padding: 8px;
+        font-size: .75rem;
+    }
+
+    .analytics-controls {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .analytics-controls select,
+    #season-selector,
+    .analytics-button {
+        width: 100%;
+    }
+
+    .h2h-score-grid {
+        grid-template-columns: 1fr 90px 1fr;
+        gap: 6px;
+    }
+
+    .h2h-team-score strong {
+        font-size: 2rem;
+    }
+
+    .h2h-team-score span {
+        font-size: .78rem;
+    }
+
+    .recent-match {
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .recent-match strong {
+        text-align: left;
+    }
+}
+
+
+/* Team-only future match prediction form */
+#predictor .form-grid {
+    display: none !important;
+}
+
+
+/* Reset buttons */
+.reset-button {
+    padding: 11px 20px;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 10px;
+    background: transparent;
+    color: #cbd5d1;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.reset-button:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: #a3e635;
+    color: #a3e635;
+}
+
+.prediction-reset-button {
+    margin-top: 12px;
+}

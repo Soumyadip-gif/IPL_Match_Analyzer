@@ -262,175 +262,38 @@ def predict():
             "team2"
         )
 
-        venue = data.get(
-            "venue"
-        )
+        # Team-only prediction defaults
+        venue = "__NEUTRAL__"
+        match_date = None
+        toss_winner = None
+        toss_decision = None
 
-        match_date = data.get(
-            "match_date"
-        )
-
-        toss_winner = data.get(
-            "toss_winner"
-        )
-
-        toss_decision = data.get(
-            "toss_decision"
-        )
-
-
-        # ----------------------------------------------------
-        # BASIC VALIDATION
-        # ----------------------------------------------------
-
-        if not team1 or not team2 or not venue:
-
+        if not team1 or not team2:
             return jsonify({
-
                 "status": "error",
-
-                "error":
-                    "Team 1, Team 2 and Venue "
-                    "are required."
-
+                "error": "Team 1 and Team 2 are required."
             }), 400
-
 
         if team1 == team2:
-
             return jsonify({
-
                 "status": "error",
-
-                "error":
-                    "Team 1 and Team 2 "
-                    "must be different."
-
+                "error": "Team 1 and Team 2 must be different."
             }), 400
-
 
         if team1 not in TEAMS:
-
             return jsonify({
-
                 "status": "error",
-
-                "error":
-                    "Invalid Team 1 selected."
-
+                "error": "Invalid Team 1 selected."
             }), 400
-
 
         if team2 not in TEAMS:
-
             return jsonify({
-
                 "status": "error",
-
-                "error":
-                    "Invalid Team 2 selected."
-
+                "error": "Invalid Team 2 selected."
             }), 400
 
-
-        if venue not in VENUES:
-
-            return jsonify({
-
-                "status": "error",
-
-                "error":
-                    "Invalid venue selected."
-
-            }), 400
-
-
-        # ----------------------------------------------------
-        # MATCH DATE
-        # ----------------------------------------------------
-
-        if not match_date:
-
-            return jsonify({
-
-                "status": "error",
-
-                "error":
-                    "Match date is required."
-
-            }), 400
-
-
-        try:
-
-            parsed_match_date = pd.to_datetime(
-                match_date,
-                errors="raise"
-            )
-
-
-            match_date = (
-                parsed_match_date
-                .strftime("%Y-%m-%d")
-            )
-
-
-            # ------------------------------------------------
-            # Season is automatically derived from date
-            # ------------------------------------------------
-
-            season = int(
-                parsed_match_date.year
-            )
-
-        except Exception:
-
-            return jsonify({
-
-                "status": "error",
-
-                "error":
-                    "match_date must be a valid "
-                    "date in YYYY-MM-DD format."
-
-            }), 400
-
-
-        # ----------------------------------------------------
-        # TOSS VALIDATION
-        # ----------------------------------------------------
-
-        if toss_winner and toss_winner not in [
-            team1,
-            team2
-        ]:
-
-            return jsonify({
-
-                "status": "error",
-
-                "error":
-                    "Toss winner must be "
-                    "Team 1 or Team 2."
-
-            }), 400
-
-
-        if toss_decision and toss_decision not in [
-            "bat",
-            "field"
-        ]:
-
-            return jsonify({
-
-                "status": "error",
-
-                "error":
-                    "Toss decision must be "
-                    "'bat' or 'field'."
-
-            }), 400
-
+        # Use the next season after the latest season in the dataset.
+        season = int(matches["season"].max()) + 1
 
         # ====================================================
         # WIN PREDICTION FEATURES
@@ -595,7 +458,7 @@ def predict():
 
                 "team2": team2,
 
-                "venue": venue,
+                "venue": "Not specified (neutral baseline)",
 
                 "season": season,
 
@@ -669,6 +532,192 @@ def predict():
 # ============================================================
 # RUN SERVER
 # ============================================================
+
+
+# ============================================================
+# IPL ANALYTICS API
+# ============================================================
+
+def get_team_record(team, dataset):
+    appearances = dataset[
+        (dataset["team1"] == team) |
+        (dataset["team2"] == team)
+    ]
+
+    decided = appearances[appearances["winner"].notna()]
+    wins = int((decided["winner"] == team).sum())
+    losses = len(decided) - wins
+
+    return {
+        "team": team,
+        "matches": int(len(appearances)),
+        "wins": wins,
+        "losses": losses,
+        "win_percentage": round(
+            wins / len(decided) * 100, 2
+        ) if len(decided) else 0
+    }
+
+
+@app.route("/api/analytics/overview")
+def analytics_overview():
+    decided = matches[matches["winner"].notna()]
+
+    return jsonify({
+        "total_matches": int(len(matches)),
+        "decided_matches": int(len(decided)),
+        "tied_matches": int(
+            (matches["result_type"] == "tie").sum()
+        ),
+        "no_result_matches": int(
+            (matches["result_type"] == "no result").sum()
+        ),
+        "total_teams": len(TEAMS),
+        "total_seasons": len(SEASONS),
+        "seasons": HISTORICAL_SEASONS,
+        "latest_season": MAX_HISTORICAL_SEASON
+    })
+
+
+@app.route("/api/analytics/teams")
+def analytics_teams():
+    records = [
+        get_team_record(team, matches)
+        for team in TEAMS
+    ]
+
+    records.sort(
+        key=lambda item: (
+            item["wins"],
+            item["win_percentage"]
+        ),
+        reverse=True
+    )
+
+    return jsonify({"teams": records})
+
+
+@app.route("/api/analytics/head-to-head")
+def analytics_head_to_head():
+    team1 = request.args.get("team1")
+    team2 = request.args.get("team2")
+
+    if team1 not in TEAMS or team2 not in TEAMS or team1 == team2:
+        return jsonify({
+            "error": "Select two different valid IPL teams."
+        }), 400
+
+    subset = matches[
+        (
+            (matches["team1"] == team1) &
+            (matches["team2"] == team2)
+        ) |
+        (
+            (matches["team1"] == team2) &
+            (matches["team2"] == team1)
+        )
+    ].copy()
+
+    decided = subset[subset["winner"].notna()]
+    team1_wins = int((decided["winner"] == team1).sum())
+    team2_wins = int((decided["winner"] == team2).sum())
+
+    recent = subset.sort_values(
+        "date", ascending=False, na_position="last"
+    ).head(10)
+
+    recent_matches = []
+    for _, row in recent.iterrows():
+        recent_matches.append({
+            "date": str(row["date"]),
+            "season": int(row["season"]) if pd.notna(row["season"]) else None,
+            "team1": row["team1"],
+            "team2": row["team2"],
+            "winner": row["winner"] if pd.notna(row["winner"]) else None,
+            "result_type": row["result_type"]
+        })
+
+    return jsonify({
+        "team1": team1,
+        "team2": team2,
+        "total_matches": int(len(subset)),
+        "decided_matches": int(len(decided)),
+        "team1_wins": team1_wins,
+        "team2_wins": team2_wins,
+        "tied_matches": int(
+            (subset["result_type"] == "tie").sum()
+        ),
+        "no_result_matches": int(
+            (subset["result_type"] == "no result").sum()
+        ),
+        "recent_matches": recent_matches
+    })
+
+
+@app.route("/api/analytics/season")
+def analytics_season():
+    year = request.args.get("year", type=int)
+
+    if year not in HISTORICAL_SEASONS:
+        return jsonify({
+            "error": "Select a valid IPL season."
+        }), 400
+
+    season_matches = matches[
+        matches["season"] == year
+    ].copy()
+
+    standings = []
+
+    season_teams = sorted(
+        set(season_matches["team1"].dropna()) |
+        set(season_matches["team2"].dropna())
+    )
+
+    for team in season_teams:
+        played = season_matches[
+            (season_matches["team1"] == team) |
+            (season_matches["team2"] == team)
+        ]
+
+        wins = int((played["winner"] == team).sum())
+        decided = played[played["winner"].notna()]
+        losses = int(len(decided) - wins)
+
+        ties = int(
+            (played["result_type"] == "tie").sum()
+        )
+        no_results = int(
+            (played["result_type"] == "no result").sum()
+        )
+
+        standings.append({
+            "team": team,
+            "played": int(len(played)),
+            "won": wins,
+            "lost": losses,
+            "tied": ties,
+            "no_result": no_results,
+            "points": wins * 2 + ties + no_results
+        })
+
+    standings.sort(
+        key=lambda item: (
+            item["points"],
+            item["won"]
+        ),
+        reverse=True
+    )
+
+    return jsonify({
+        "season": year,
+        "total_matches": int(len(season_matches)),
+        "decided_matches": int(
+            season_matches["winner"].notna().sum()
+        ),
+        "standings": standings
+    })
+
 
 if __name__ == "__main__":
 

@@ -116,7 +116,7 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
 
             const response =
-                await fetch("https://ipl-match-analyzer.onrender.com/api/options");
+                await fetch("/api/options");
 
             const data =
                 await response.json();
@@ -336,6 +336,23 @@ document.addEventListener("DOMContentLoaded", () => {
         );
     }
 
+    const resetPredictionBtn = document.getElementById("reset-prediction-btn");
+
+    if (resetPredictionBtn) {
+        resetPredictionBtn.addEventListener("click", () => {
+            team1Select.value = "";
+            team2Select.value = "";
+
+            clearError();
+            setLoading(false);
+            resetScorePrediction();
+            resetVenueDashboard();
+
+            if (resultSection) resultSection.classList.add("hidden");
+            if (scorePredictionCard) scorePredictionCard.classList.add("hidden");
+        });
+    }
+
 
     // -----------------------------------------------------
     // MAKE PREDICTION
@@ -389,115 +406,18 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        if (!venueSelect.value) {
-
-            showError(
-                "Please select a venue."
-            );
-
-            return;
-        }
-
-        if (!matchDateInput.value) {
-
-            showError(
-                "Please select the future match date."
-            );
-
-            return;
-        }
-
-        const selectedDate =
-            new Date(
-                matchDateInput.value +
-                "T00:00:00"
-            );
-
-        const today =
-            new Date();
-
-        today.setHours(
-            0,
-            0,
-            0,
-            0
-        );
-
-        if (
-            Number.isNaN(
-                selectedDate.getTime()
-            )
-        ) {
-
-            showError(
-                "Please select a valid match date."
-            );
-
-            return;
-        }
-
-        if (selectedDate <= today) {
-
-            showError(
-                "Please select a future match date."
-            );
-
-            return;
-        }
-
-        if (!tossWinnerSelect.value) {
-
-            showError(
-                "Please select the toss winner."
-            );
-
-            return;
-        }
-
-        if (!tossDecisionSelect.value) {
-
-            showError(
-                "Please select the toss decision."
-            );
-
-            return;
-        }
-
 
         // ---------------------------------------------
         // AUTOMATIC SEASON
         // ---------------------------------------------
 
-        const season =
-            selectedDate.getFullYear();
-
-
-        // ---------------------------------------------
+// ---------------------------------------------
         // REQUEST
         // ---------------------------------------------
 
         const requestData = {
-
-            team1:
-                team1Select.value,
-
-            team2:
-                team2Select.value,
-
-            venue:
-                venueSelect.value,
-
-            match_date:
-                matchDateInput.value,
-
-            season:
-                season,
-
-            toss_winner:
-                tossWinnerSelect.value,
-
-            toss_decision:
-                tossDecisionSelect.value
+            team1: team1Select.value,
+            team2: team2Select.value
         };
 
 
@@ -541,7 +461,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const response =
                 await fetch(
-                    "https://ipl-match-analyzer.onrender.com/api/predict",
+                    "/api/predict",
                     {
                         method: "POST",
 
@@ -1543,6 +1463,201 @@ document.addEventListener("DOMContentLoaded", () => {
     // -----------------------------------------------------
     // START
     // -----------------------------------------------------
+
+
+
+    // -----------------------------------------------------
+    // IPL ANALYTICS DASHBOARD
+    // -----------------------------------------------------
+
+    const analyticsTeam1 = document.getElementById("analytics-team1");
+    const analyticsTeam2 = document.getElementById("analytics-team2");
+    const seasonSelector = document.getElementById("season-selector");
+
+    function analyticsNumber(value) {
+        return Number(value || 0).toLocaleString("en-IN");
+    }
+
+    function analyticsEscape(value) {
+        return String(value ?? "").replace(/[&<>"']/g, char => ({
+            "&": "&amp;", "<": "&lt;", ">": "&gt;",
+            '"': "&quot;", "'": "&#39;"
+        })[char]);
+    }
+
+    async function fetchAnalytics(url) {
+        const response = await fetch(url);
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.error || "Analytics request failed.");
+        }
+        return data;
+    }
+
+    async function loadAnalytics() {
+        try {
+            const [overview, teams, options] = await Promise.all([
+                fetchAnalytics("/api/analytics/overview"),
+                fetchAnalytics("/api/analytics/teams"),
+                fetchAnalytics("/api/options")
+            ]);
+
+            document.getElementById("stat-matches").textContent =
+                analyticsNumber(overview.total_matches);
+            document.getElementById("stat-decided").textContent =
+                analyticsNumber(overview.decided_matches);
+            document.getElementById("stat-teams").textContent =
+                analyticsNumber(overview.total_teams);
+            document.getElementById("stat-seasons").textContent =
+                analyticsNumber(overview.total_seasons);
+
+            document.getElementById("team-stats-body").innerHTML =
+                teams.teams.map((team, index) => `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td class="analytics-team-name">${analyticsEscape(team.team)}</td>
+                        <td>${analyticsNumber(team.matches)}</td>
+                        <td>${analyticsNumber(team.wins)}</td>
+                        <td>${analyticsNumber(team.losses)}</td>
+                        <td>${Number(team.win_percentage).toFixed(2)}%</td>
+                    </tr>
+                `).join("");
+
+            const teamOptions = options.teams.map(team =>
+                `<option value="${analyticsEscape(team)}">${analyticsEscape(team)}</option>`
+            ).join("");
+
+            analyticsTeam1.innerHTML = teamOptions;
+            analyticsTeam2.innerHTML = teamOptions;
+
+            if (options.teams.length > 1) {
+                analyticsTeam2.selectedIndex = 1;
+            }
+
+            seasonSelector.innerHTML = overview.seasons
+                .slice().reverse()
+                .map(year => `<option value="${year}">${year} Season</option>`)
+                .join("");
+
+            seasonSelector.value = String(overview.latest_season);
+
+            await loadSeasonAnalytics();
+            await loadHeadToHeadAnalytics();
+
+        } catch (error) {
+            console.error("Analytics loading error:", error);
+            document.getElementById("team-stats-body").innerHTML =
+                `<tr><td colspan="6">${analyticsEscape(error.message)}</td></tr>`;
+            document.getElementById("season-summary").textContent =
+                "Unable to load season data. Please refresh the page.";
+        }
+    }
+
+    async function loadHeadToHeadAnalytics() {
+        const result = document.getElementById("h2h-result");
+        const team1 = analyticsTeam1.value;
+        const team2 = analyticsTeam2.value;
+
+        if (!team1 || !team2 || team1 === team2) {
+            result.textContent = "Please select two different teams.";
+            return;
+        }
+
+        result.textContent = "Loading comparison...";
+
+        try {
+            const params = new URLSearchParams({ team1, team2 });
+            const data = await fetchAnalytics(
+                `/api/analytics/head-to-head?${params}`
+            );
+
+            result.innerHTML = `
+                <div class="h2h-score-grid">
+                    <div class="h2h-team-score">
+                        <span>${analyticsEscape(data.team1)}</span>
+                        <strong>${data.team1_wins}</strong>
+                        <small>Wins</small>
+                    </div>
+                    <div class="h2h-middle">
+                        <strong>${data.total_matches}</strong>
+                        <span>Total Meetings</span>
+                    </div>
+                    <div class="h2h-team-score">
+                        <span>${analyticsEscape(data.team2)}</span>
+                        <strong>${data.team2_wins}</strong>
+                        <small>Wins</small>
+                    </div>
+                </div>
+                <p class="analytics-footnote">
+                    ${data.tied_matches} tied ? ${data.no_result_matches} no-result matches ?
+                    ${data.decided_matches} decided matches
+                </p>
+                <h4 class="recent-heading">Recent Meetings</h4>
+                <div class="recent-match-list">
+                    ${data.recent_matches.map(match => `
+                        <div class="recent-match">
+                            <span>${analyticsEscape(match.season ?? "?")} ? ${analyticsEscape(match.date)}</span>
+                            <strong>${analyticsEscape(match.winner || "No winner recorded")}</strong>
+                        </div>
+                    `).join("")}
+                </div>
+            `;
+        } catch (error) {
+            result.textContent = error.message;
+        }
+    }
+
+    async function loadSeasonAnalytics() {
+        const year = seasonSelector.value;
+        const body = document.getElementById("season-stats-body");
+        const summary = document.getElementById("season-summary");
+
+        if (!year) return;
+
+        body.innerHTML = '<tr><td colspan="8">Loading season...</td></tr>';
+
+        try {
+            const data = await fetchAnalytics(
+                `/api/analytics/season?year=${encodeURIComponent(year)}`
+            );
+
+            summary.textContent =
+                `${data.season} Season ? ${analyticsNumber(data.total_matches)} matches ? ` +
+                `${analyticsNumber(data.decided_matches)} decided matches`;
+
+            body.innerHTML = data.standings.map((team, index) => `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td class="analytics-team-name">${analyticsEscape(team.team)}</td>
+                    <td>${team.played}</td>
+                    <td>${team.won}</td>
+                    <td>${team.lost}</td>
+                    <td>${team.tied}</td>
+                    <td>${team.no_result}</td>
+                    <td><strong>${team.points}</strong></td>
+                </tr>
+            `).join("");
+        } catch (error) {
+            summary.textContent = error.message;
+            body.innerHTML = '<tr><td colspan="8">Unable to load standings.</td></tr>';
+        }
+    }
+
+    document.getElementById("h2h-compare-btn")
+        .addEventListener("click", loadHeadToHeadAnalytics);
+
+    document.getElementById("h2h-reset-btn")
+        .addEventListener("click", () => {
+            analyticsTeam1.value = "";
+            analyticsTeam2.value = "";
+            document.getElementById("h2h-result").textContent =
+                "Select two teams to compare their historical results.";
+        });
+
+    seasonSelector.addEventListener("change", loadSeasonAnalytics);
+
+    loadAnalytics();
+
 
     loadOptions();
 
